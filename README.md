@@ -1,71 +1,65 @@
-# European Option Pricing using Black-Scholes Model
-
-## Methodology
+# Methodology
 
 The model of Black and Scholes (1973) implies that it is possible to price European-style derivatives by simulating the stock price under the risk-neutral measure and discounting expected payoffs at the risk-free rate.
 
-**Reference**:  
-Black, Fischer, and Myron Scholes. 1973. *The Pricing of Options and Corporate Liabilities.* Journal of Political Economy 81 (3): 637–54.
+Black, Fischer, and Myron Scholes. 1973. "The Pricing of Options and Corporate Liabilities." *Journal of Political Economy* 81 (3): 637–54.
 
-Consider a stock with price \( S \) that pays a dividend yield \( q \) and whose risk-neutral dynamics are given by:
+Consider a stock with price $S$ that pays a dividend yield $q$ and whose risk-neutral dynamics are given by
 
-\[
-dS = (r - q) S \, dt + \sigma S \, dz,
-\]
+$$
+\frac{dS}{S} = (r - q) dt + \sigma dz
+$$
 
-where:  
-- \( r \): Continuously compounded risk-free rate  
-- \( z \): Brownian motion  
+where $r$ denotes the continuously compounded risk-free rate and $z$ is a Brownian motion. If we denote $x = \ln(S)$, Ito’s lemma implies that
 
-Using \( x = \ln(S) \), Ito's lemma implies:
+$$
+dx = \left(\mu - \frac{1}{2} \sigma^2 \right) dt + \sigma dz
+$$
 
-\[
-dx = \left( \mu - \frac{1}{2} \sigma^2 \right) dt + \sigma dz.
-\]
+We can express the previous expression in discrete time as
 
-In discrete time, this can be written as:
+$$
+\Delta x_t = \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \Delta z_t = \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \Delta t \epsilon_t + \Delta t
+$$
 
-\[
-\Delta x_t = \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \sqrt{\Delta t} \epsilon_t,
-\]
+which implies
 
-where \( \epsilon_t \sim N(0, 1) \). Expanding further:
+$$
+x_1 \Delta t = x_0 \Delta t + \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \Delta t \epsilon_1
+$$
 
-- \( x_1 = x_0 + \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \sqrt{\Delta t} \epsilon_1 \),  
-- \( x_2 = x_1 + \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \sqrt{\Delta t} \epsilon_2 \),  
-- \( \dots \),  
-- \( x_n = x_{n-1} + \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \sqrt{\Delta t} \epsilon_n \).  
+$$
+x_2 \Delta t = x_1 \Delta t + \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \Delta t \epsilon_2
+$$
 
-### Pricing European-Style Options
+$$
+x_3 \Delta t = x_2 \Delta t + \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \Delta t \epsilon_3
+$$
 
-The price of the option is computed as:
+...
 
-\[
-P = E(X) e^{-rT},
-\]
+$$
+x_n \Delta t = x_{n-1} \Delta t + \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \Delta t \epsilon_n
+$$
 
-where:  
-- \( P \): Option price  
-- \( E(X) \): Expected payoff  
-- \( r \): Risk-free rate  
-- \( T \): Time to maturity  
+In this project, you will be pricing European-style options expiring in $T = 0.75$ years by assuming that the stock price changes every trading day. If we assume that there are 250 trading days in a year, this implies that $\Delta t = \frac{1}{250} = 0.004$ years. Therefore, for each path or history of the stock price, you will pick 250 independent $N(0,1)$ random numbers in order to compute the simulated path.
 
-### Simulation Steps
+You will simulate 10,000 different paths or histories of the stock. The price of each option will be computed as the average payoff at maturity discounted at the risk-free rate. Note that for some options, the payoff might depend on the whole history of the stock price. If $X = f(\{ S \}_{t=0}^{T})$ denotes the potentially path-dependent payoff of the option, its price is given by
 
-1. Simulate the stock price history from \( t = 0 \) to \( t = T \) using \( \Delta t = 0.004 \).  
-2. Compute the payoff \( X(k) \) for each simulation \( k \).  
-3. Repeat for 10,000 simulations.  
-4. The option price is then:
+$$
+P = \mathbb{E}(X) e^{-rT}
+$$
 
-\[
-P = \left( \frac{1}{10,000} \sum_{k=1}^{10,000} X(k) \right) e^{-rT}.
-\]
+Therefore:
 
-### Assumptions
+- Simulate the price history from $t = 0$ until $t = T$ using a $\Delta t = 0.004$.
+- Compute the payoff $X(k)$ of the option in simulation $k$.
+- Do this 10,000 times.
 
-- Initial stock price: \( S_0 = 100 \)  
-- Risk-free rate: \( r = 5\% \)  
-- Dividend yield: \( q = 2\% \)  
-- Volatility: \( \sigma = 40\% \)  
-- Number of trading days in a year: 250  
-- Time step: \( \Delta t = \frac{1}{250} = 0.004 \)
+Once you have all 10,000 simulations, the price of the option will be given by
+
+$$
+P = \left( \frac{1}{10,000} \sum_{k=1}^{10,000} X(k) \right) e^{-rT}
+$$
+
+We will assume in the following that the stock price today is $S_0 = 100$, $r = 5\%$, $q = 2\%$, and $\sigma = 40\%$.
