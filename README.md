@@ -1,64 +1,71 @@
-# European Option Pricing Simulation
+# European Option Pricing using Black-Scholes Model
 
-This project implements a Monte Carlo simulation to price European-style options expiring in \( T = 0.75 \) years. The simulation assumes the stock price changes daily, with 250 trading days in a year, and generates 10,000 price paths to compute the option price.
+## Methodology
 
----
+The model of Black and Scholes (1973) implies that it is possible to price European-style derivatives by simulating the stock price under the risk-neutral measure and discounting expected payoffs at the risk-free rate.
 
-## **Problem Description**
+**Reference**:  
+Black, Fischer, and Myron Scholes. 1973. *The Pricing of Options and Corporate Liabilities.* Journal of Political Economy 81 (3): 637–54.
 
-The stock price \( S_t \) follows the risk-neutral dynamics:
+Consider a stock with price \( S \) that pays a dividend yield \( q \) and whose risk-neutral dynamics are given by:
 
-\[ dS_t = (r - q) S_t dt + \sigma S_t dz_t, \]
+\[
+dS = (r - q) S \, dt + \sigma S \, dz,
+\]
 
-where:
-- \( S_0 = 100 \): Initial stock price
-- \( r = 0.05 \): Continuously compounded risk-free rate (5%)
-- \( q = 0.02 \): Dividend yield (2%)
-- \( \sigma = 0.40 \): Volatility (40%)
-- \( T = 0.75 \): Option maturity in years
-- \( \Delta t = 1/250 = 0.004 \): Time step (1 trading day)
-- \( z_t \): Standard Brownian motion
+where:  
+- \( r \): Continuously compounded risk-free rate  
+- \( z \): Brownian motion  
 
-The dynamics of the log-price \( x = \ln(S) \) are given by:
+Using \( x = \ln(S) \), Ito's lemma implies:
 
-\[ x_{t+\Delta t} = x_t + \left(r - q - \frac{\sigma^2}{2}\right) \Delta t + \sigma \sqrt{\Delta t} \epsilon, \]
+\[
+dx = \left( \mu - \frac{1}{2} \sigma^2 \right) dt + \sigma dz.
+\]
 
-where \( \epsilon \sim N(0, 1) \). 
+In discrete time, this can be written as:
 
-The price of the option is:
+\[
+\Delta x_t = \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \sqrt{\Delta t} \epsilon_t,
+\]
 
-\[ P = \frac{1}{10,000} \sum_{k=1}^{10,000} X_k e^{-rT}, \]
+where \( \epsilon_t \sim N(0, 1) \). Expanding further:
 
-where \( X_k \) is the payoff for the \( k \)-th simulation.
+- \( x_1 = x_0 + \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \sqrt{\Delta t} \epsilon_1 \),  
+- \( x_2 = x_1 + \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \sqrt{\Delta t} \epsilon_2 \),  
+- \( \dots \),  
+- \( x_n = x_{n-1} + \left( \mu - \frac{1}{2} \sigma^2 \right) \Delta t + \sigma \sqrt{\Delta t} \epsilon_n \).  
 
----
+### Pricing European-Style Options
 
-## **Steps**
-1. **Simulate Price Paths**:
-   - Simulate 10,000 paths for the stock price from \( t = 0 \) to \( t = T \), using \( \Delta t = 0.004 \).
+The price of the option is computed as:
 
-2. **Compute Payoffs**:
-   - For each path, calculate the option payoff \( X(k) \) at maturity.
+\[
+P = E(X) e^{-rT},
+\]
 
-3. **Calculate Option Price**:
-   - Average the payoffs across all paths and discount them at the risk-free rate \( r \).
+where:  
+- \( P \): Option price  
+- \( E(X) \): Expected payoff  
+- \( r \): Risk-free rate  
+- \( T \): Time to maturity  
 
----
+### Simulation Steps
 
-## **Inputs**
-- Stock price today: \( S_0 = 100 \)
-- Risk-free rate: \( r = 5\% \)
-- Dividend yield: \( q = 2\% \)
-- Volatility: \( \sigma = 40\% \)
-- Time step: \( \Delta t = 0.004 \)
-- Number of paths: 10,000
+1. Simulate the stock price history from \( t = 0 \) to \( t = T \) using \( \Delta t = 0.004 \).  
+2. Compute the payoff \( X(k) \) for each simulation \( k \).  
+3. Repeat for 10,000 simulations.  
+4. The option price is then:
 
----
+\[
+P = \left( \frac{1}{10,000} \sum_{k=1}^{10,000} X(k) \right) e^{-rT}.
+\]
 
-## **Outputs**
-- Simulated stock price paths.
-- Estimated option price.
+### Assumptions
 
----
-
-This README explains the simulation setup and details how the option price is calculated using Monte Carlo methods.
+- Initial stock price: \( S_0 = 100 \)  
+- Risk-free rate: \( r = 5\% \)  
+- Dividend yield: \( q = 2\% \)  
+- Volatility: \( \sigma = 40\% \)  
+- Number of trading days in a year: 250  
+- Time step: \( \Delta t = \frac{1}{250} = 0.004 \)
