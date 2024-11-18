@@ -123,7 +123,7 @@ The Jupyter Notebook uses the functions in `Methodology.py` to simulate stock pr
 1. **Simulating Stock Prices**:
    - The `simulation` function is called to generate 10,000 simulated stock price paths, based on the specified parameters (e.g., `S0 = 100`, `r = 5%`, `q = 2%`, `sigma = 40%`).
 
-2**Pricing the Option**:
+2. **Pricing the Option**:
    - The _`Price` functions are then used to compute the payoffs and then the price of the option by averaging the payoffs across all simulations and discounting the result at the risk-free rate.
 
 ## Requirements
