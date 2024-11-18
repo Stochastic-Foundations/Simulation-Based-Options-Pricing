@@ -63,3 +63,74 @@ P = \left( \frac{1}{10,000} \sum_{k=1}^{10,000} X(k) \right) e^{-rT}
 $$
 
 We will assume in the following that the stock price today is $S_0 = 100$, $r = 5\%$, $q = 2\%$, and $\sigma = 40\%$.
+
+
+## Methodology File: `Methodology.py`
+
+The `Methodology.py` file contains the core functions to simulate stock prices and calculate option prices.
+
+### Functions in `Methodology.py`
+
+1. **`stock_price(s_0=100, dt=0.004, r=0.05, q=0.02, vol=0.4, period=250)`**
+   - Simulates the stock price over a period (typically 250 trading days).
+   - **Parameters**:
+     - `s_0`: Initial stock price (default is 100)
+     - `dt`: Time step (default is 0.004, corresponding to 1 day in a 250-day year)
+     - `r`: Risk-free rate (default is 5%)
+     - `q`: Dividend yield (default is 2%)
+     - `vol`: Volatility (default is 40%)
+     - `period`: Number of trading days (default is 250)
+   - **Returns**: A numpy array of stock prices over the specified period.
+
+2. **`simulation(iterations=10000, period=250)`**
+   - Simulates multiple stock price paths for a given number of iterations.
+   - **Parameters**:
+     - `iterations`: Number of simulated paths (default is 10,000)
+     - `period`: Number of trading days for each path (default is 250)
+   - **Returns**: A 2D numpy array of simulated stock prices with shape `(iterations, period)`.
+
+3. **`option_price(option_payoff, rate=0.05, T=0.75)`**
+   - Computes the price of an option based on the average payoff of all simulations, discounted at the risk-free rate.
+   - **Parameters**:
+     - `option_payoff`: Array of option payoffs from simulations
+     - `rate`: Risk-free rate (default is 5%)
+     - `T`: Time to maturity (default is 0.75 years)
+   - **Returns**: The price of the option.
+
+4. **`plotting(payoffs, name)`**
+   - Plots the payoff histogram of the option with the average payoff displayed on the plot.
+   - **Parameters**:
+     - `payoffs`: Array of option payoffs from simulations
+     - `name`: Name of the option (e.g., "Lookback Call Option")
+   - **Returns**: Displays a histogram plot of the payoffs.
+
+5. **`lookBackCallPrice(sim=simulation())`**
+   - Simulates the price of a Lookback Call Option by calculating payoffs based on the minimum stock price during the option’s life.
+   - **Parameters**:
+     - `sim`: A simulation of stock prices (default is 10,000 iterations)
+   - **Returns**: Prints the price of the Lookback Call Option and shows the payoff histogram.
+
+6. **`lookBackPutPrice(sim=simulation())`**
+   - Simulates the price of a Lookback Put Option by calculating payoffs based on the maximum stock price during the option’s life.
+   - **Parameters**:
+     - `sim`: A simulation of stock prices (default is 10,000 iterations)
+   - **Returns**: Prints the price of the Lookback Put Option and shows the payoff histogram.
+
+## Jupyter Notebook: `OptionsPricing.ipynb`
+
+The Jupyter Notebook uses the functions in `Methodology.py` to simulate stock price paths, calculate option payoffs, and compute the option price.
+
+1. **Simulating Stock Prices**:
+   - The `simulation` function is called to generate 10,000 simulated stock price paths, based on the specified parameters (e.g., `S0 = 100`, `r = 5%`, `q = 2%`, `sigma = 40%`).
+
+2**Pricing the Option**:
+   - The _`Price` functions are then used to compute the payoffs and then the price of the option by averaging the payoffs across all simulations and discounting the result at the risk-free rate.
+
+## Requirements
+
+This project requires the following Python packages:
+
+- `numpy`
+- `matplotlib`
+
+
