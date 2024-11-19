@@ -11,7 +11,7 @@ def stock_price(s_0=100, dt=0.004, r=0.05, q=0.02, vol=0.4, period=250):
     price_new = s_0
 
     for a in range(period):
-        price_new = (price_new + (r - q) * dt + vol * np.sqrt(dt) *
+        price_new = price_new * np.exp((r - q - 0.5 * vol**2) * dt + vol * np.sqrt(dt) *
                      epsilon[a])
         ## updated price of the stock
         prices[a] = price_new
@@ -35,7 +35,7 @@ def plotting(payoffs, name):
     plt.xlabel("Payoffs")
     plt.title("Payoff Histogram of " + name + " With Average Payoff")
     avg = np.mean(payoffs)
-    plt.scatter(avg, 0, color="blue", s=40, marker='o')
+    plt.scatter(avg, 10, color="red", s=40, marker='x')
     ## Note average payoff at maturity
     plt.show()
 
@@ -66,3 +66,31 @@ def lookBackPutPrice(sim=simulation()):
     print("Price of Lookback Put Option: $" + str(
         option_price(payoffs)))
     # calculate the price from the payoffs of all sims
+
+def europeanCallPrice(sim=simulation()):
+    # Simulation and price of European Call Option
+    strike_price = 110  # Strike price for the call option
+    payoffs = np.zeros(len(sim))  # initialize empty array for payoffs
+    i = 0
+    for vector in sim:
+        S_T = vector[-1]  # price at maturity
+        payoffs[i] = max(S_T - strike_price, 0)  # European call payoff
+        i += 1
+    plotting(payoffs, "European Call Option")
+    print("Price of European Call Option: $" + str(
+        option_price(payoffs)))
+
+
+def europeanPutPrice(sim=simulation()):
+    # Simulation and price of European Put Option
+    strike_price = 90  # Strike price for the put option
+    payoffs = np.zeros(len(sim))  # initialize empty array for payoffs
+    i = 0
+    for vector in sim:
+        S_T = vector[-1]  # price at maturity
+        payoffs[i] = max(strike_price - S_T, 0)  # European put payoff
+        i += 1
+    plotting(payoffs, "European Put Option")
+    print("Price of European Put Option: $" + str(
+        option_price(payoffs)))
+
