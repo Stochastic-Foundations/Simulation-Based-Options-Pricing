@@ -31,11 +31,15 @@ def option_price(option_payoff, rate=0.05, T=0.75):
                np.exp(-T * rate) * 10000) / 10000
 
 def plotting(payoffs, name):
-    plt.hist(payoffs, bins=30)
-    plt.xlabel("Payoffs")
-    plt.title("Payoff Histogram of " + name + " With Average Payoff")
     avg = np.mean(payoffs)
-    plt.scatter(avg, 10, color="red", s=40, marker='x')
+    plt.figure(figsize=(8, 6))
+    plt.hist(payoffs, bins=30, color = "orange", edgecolor = "black")
+    plt.axvline(x=avg, color='red', linestyle='--', linewidth=2, label=f'Average Payoff = {avg:.2f}')
+    plt.xlabel('Payoff', fontsize=12)
+    plt.ylabel('Frequency', fontsize=12)
+    plt.title("Payoff Histogram of " + name, fontsize=14)
+    plt.grid(alpha=0.3)
+    plt.legend(fontsize=12)
     ## Note average payoff at maturity
     plt.show()
 

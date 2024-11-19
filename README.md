@@ -126,6 +126,51 @@ The Jupyter Notebook uses the functions in `Methodology.py` to simulate stock pr
 2. **Pricing the Option**:
    - The _`Price` functions are then used to compute the payoffs and then the price of the option by averaging the payoffs across all simulations and discounting the result at the risk-free rate.
 
+
+markdown
+Copy code
+## File: `AsianOptions.py`
+
+The `AsianOptions.py` file contains the implementation of functions to simulate stock price paths and calculate the prices of Asian options, specifically Average Strike Call and Put options. The file uses the Black-Scholes risk-neutral dynamics to simulate stock prices and compute path-dependent payoffs.
+
+### Functions in `AsianOptions.py`
+
+1. **`simulate_stock_prices(S0=100, r=0.05, q=0.02, sigma=0.4, T=0.75, N=250, M=10000)`**
+   - Simulates stock price paths under the risk-neutral measure.
+   - **Parameters**:
+     - `S0`: Initial stock price (default = 100)
+     - `r`: Risk-free rate (default = 5%)
+     - `q`: Dividend yield (default = 2%)
+     - `sigma`: Volatility (default = 40%)
+     - `T`: Time to maturity (default = 0.75 years)
+     - `N`: Number of time steps (default = 250)
+     - `M`: Number of simulations (default = 10,000)
+   - **Returns**: A 2D NumPy array of simulated stock prices of shape `(M, N + 1)`.
+
+2. **`calculate_asian_option_prices(S, r=0.05, T=0.75)`**
+   - Computes the prices of Average Strike Call and Put options.
+   - **Parameters**:
+     - `S`: A 2D NumPy array of simulated stock prices.
+     - `r`: Risk-free rate (default = 5%)
+     - `T`: Time to maturity (default = 0.75 years)
+   - **Returns**:
+     - `price_call`: Price of the Average Strike Call option.
+     - `price_put`: Price of the Average Strike Put option.
+   - **Details**:
+     - The average stock price ($\bar{S}$) is computed as the mean of all stock prices up to the final time step.
+     - Payoffs are calculated as:
+       - Call: $\max(S_T - \bar{S}, 0)$
+       - Put: $\max(\bar{S} - S_T, 0)$
+     - Option prices are discounted using $e^{-rT}$.
+
+3. **`plot_payoff_histograms(payoffs, title, color)`**
+   - Plots histograms of option payoffs.
+   - **Parameters**:
+     - `payoffs`: Array of payoffs for the simulated options.
+     - `title`: Title for the histogram plot.
+     - `color`: Histogram color (e.g., `'orange'` for calls or `'blue'` for puts).
+
+
 ## Requirements
 
 This project requires the following Python packages:
